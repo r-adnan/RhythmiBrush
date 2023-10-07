@@ -3,12 +3,13 @@ import sys
 import os
 
 # Third-party imports
-import cv2
+import cv2 as cv
 import numpy as np
 import mediapipe as mp 
 import time
 
 # Taking Inspiration from Murtaza's HandTracking (Optimizing FPS so its not laggy)
+# https://www.youtube.com/@murtazasworkshop
 class handDetection():
     def __init__(self, mode=False, maxHands=2, modelComplexity=1,detectionCon=0.5, trackCon=0.5):
         self.mode = mode 
@@ -22,87 +23,91 @@ class handDetection():
                                     self.detectionCon, self.trackCon)
         self.mpDraw = mp.solutions.drawing_utils
 
+        self.tipIDs = [4, 8, 12, 16, 20]
 
+    # Finds the hands and draws both the landmark nodes and connections 
+    # if draw == True
     def findHands(self, frame, draw=True):
-        imageRGB = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        results = self.hands.process(imageRGB)
+        imageRGB = cv.cvtColor(frame, cv.COLOR_BGR2RGB)
+        self.results = self.hands.process(imageRGB)
         
-        if results.multi_hand_landmarks:
-            for handLms in results.multi_hand_landmarks:
+        if self.results.multi_hand_landmarks:
+            for handLms in self.results.multi_hand_landmarks:
                 if draw:
                     self.mpDraw.draw_landmarks(frame, handLms, self.mpHands.HAND_CONNECTIONS)
         return frame
+    
+    # Returns a list of every landmark node location on the screen
+    # If draw == True, then it also draws a circle on the specific landmark node you want
+    def findPosition(self, frame, landmarkID=8, draw=True):
+        self.lmList = []
+        
+        if self.results.multi_hand_landmarks:
+            for handLMS in self.results.multi_hand_landmarks:
+                # print(self.results.multi_hand_landmarks)
+                # print(handLMS)
+                for id, lm in enumerate(handLMS.landmark):
+                    h, w, c = frame.shape
+                    cx, cy = int(lm.x * w), int(lm.y * h)
+                    self.lmList.append([id, cx, cy])
+                    if draw and id == landmarkID:
+                        cv.circle(frame, (cx, cy), 10, (255, 0, 255), cv.FILLED)
+            
+                # lm = handLMS.landmark[landmarkID]
+                # h, w, c = frame.shape
+                # # print(int(lm.x * w), int(lm.y * h))
+                # cx, cy = int(lm.x * w), int(lm.y * h)
+                # self.lmList.append([id, cx, cy])
+                # cv.circle(frame, (cx, cy), 10, (255, 0, 255), cv.FILLED)
+            
+        return self.lmList
+    # HandTracker class method that returns a boolean arr size 5 of which fingers are up
+    def fingersUp(self):
+        fingers = []
+
+        # Thumb
+        if self.lmList[self.tipIDs[0]][1] < self.lmList[self.tipIDs[0] - 1][1]:
+            fingers.append(1)
+        else:
+            fingers.append(0)
+
+        # 4Fingers
+        for id in range(1, 5):
+            if self.lmList[self.tipIDs[id]][2] < self.lmList[self.tipIDs[id] - 2][2]:
+                fingers.append(1)
+            else:
+                fingers.append(0)
+        return fingers
+    
+# Just a tester function
 def main():
     pTime = 0
     cTime = 0
-    cap = cv2.VideoCapture(0)
+    cap = cv.VideoCapture(0)
     
-    detect = handDetection()
+    detector = handDetection()
 
     while True:
         ret, frame = cap.read()
-        frame = detect.findHands(frame)
+        frame = cv.flip(frame, 1)
+        frame = detector.findHands(frame)
+
+        lmList = detector.findPosition(frame)
+
+        if lmList:
+            print(lmList)
 
         cTime = time.time()
         fps = 1 / (cTime - pTime)
         pTime = cTime
 
-        cv2.putText(frame, str(int(fps)), (10, 70), cv2.FONT_HERSHEY_PLAIN, 3, 
-                                                            (255, 0, 255), 3)
-        
-        cv2.imshow("capTest", frame)
-        if cv2.waitKey(1) == ord('q'):
+        cv.putText(frame, str(int(fps)), (10, 70),0, 2, 
+                                                    (0, 255, 0), 3)
+
+        cv.imshow("capTest", frame)
+        if cv.waitKey(1) == ord('q'):
             break
 
-# def videoCap():
-#     cap = cv.VideoCapture(0)
-
-#     cap.set(cv.CAP_PROP_FRAME_WIDTH, 1280)
-#     cap.set(cv.CAP_PROP_FRAME_HEIGHT, 720)
-#     mpHands = mp.solutions.hands
-#     hands = mpHands.Hands() 
-#     mpDraw = mp.solutions.drawing_utils 
-
-#     if not cap.isOpened():
-#         print("Cannot open camera")
-#         exit()
-
-#     px, py = 0, 0
-
-#     ret, frame = cap.read()
-#     frame = cv.flip(frame, 1)
-#     canvas = np.zeros_like(frame)
-
-#     while True:
-#         # We should capture frame-by-frame footage
-#         ret, frame = cap.read()
-#         frame = cv.flip(frame, 1)
-#         if not ret:
-#             print("Can't recieve frame, Exiting...")
-#             break
-        
-#         imageRGB = cv.cvtColor(frame, cv.COLOR_BGR2RGB)
-#         results = hands.process(imageRGB)
-        
-#         if results.multi_hand_landmarks:
-#             for handLms in results.multi_hand_landmarks:
-#                 for id, lm in enumerate(handLms.landmark):
-#                     h, w, c = frame.shape
-#                     cx, cy = int(lm.x * w), int(lm.y * h)
-#                     if id == 8:
-#                         if px == 0 and py == 0:
-#                             px, py = cx, cy
-#                         cv.line(canvas, (cx,cy), (px, py), (255, 0, 0), 10)
-#                         frame = cv.addWeighted(frame, 1, canvas, 0.5, 0)
-#                         px, py = cx, cy
-#                         # mpDraw.draw_landmarks(frame, handLms, mpHands.HAND_CONNECTIONS)
-
-#         cv.imshow('HandCap', frame)
-#         if cv.waitKey(1) == ord('q'):
-#             break
-        
-#     cap.release()
-#     cv.destroyAllWindows()
 
 if __name__ == "__main__":
     main()
