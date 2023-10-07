@@ -1,6 +1,7 @@
 # TODO
 .
     **MAIN FEATURES**
+        - Setup Camera
         - Capture input from camera
         - Hand detection
         - Get position of hand
