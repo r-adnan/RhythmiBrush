@@ -26,8 +26,7 @@ def videoProcess():
             print("Can't recieve frame, Exiting...")
             break
 
-        gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
-        cv.imshow(frame, gray)
+        cv.imshow('videoCap', frame)
         
         if cv.waitKey(1) == ord('q'):
             break
