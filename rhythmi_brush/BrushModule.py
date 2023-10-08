@@ -12,7 +12,7 @@ class Brush:
         self.target_color = target_color
 
     def update(self):
-        t = (time.time() - self.start_time) / 10  # Adjust the divisor for speed
+        t = (time.time() - self.start_time) / 123  # Adjust the divisor for speed
         t = min(t, 1)  # Clamp between 0 and 1
 
         # Update color using lerp
@@ -26,7 +26,7 @@ class Brush:
         valz = self.vibrate(self.size, 4, 1, time.time())
         self.size = valz if  3 < valz < 30 else 6
         self.color = (
-            int(self.vibrate(self.color[0], 30, 1, time.time())),
+            int(self.vibrate(self.color[0], 50, 1, time.time())),
             self.color[1],
             self.color[2]
         )

@@ -29,6 +29,9 @@ class spotipyModule:
     def getCurrTrack(self):
         return self.sp.current_playback()
     
+    def getTrackURI(self):
+        return self.getCurrTrack()['item']['uri']
+    
     def setTrack(self, track_uri='spotify:track:0HUTL8i4y4MiGCPId7M7wb'):
         self.sp.start_playback(uris=[track_uri])
     

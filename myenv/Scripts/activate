@@ -38,11 +38,11 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="/home/noobil/Desktop/Hackathon/RhythmiBrush/myenv"
+VIRTUAL_ENV="C:\Users\elmkC\Desktop\code\RhythmiBrush\rhythmi_brush\myenv"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"
-PATH="$VIRTUAL_ENV/bin:$PATH"
+PATH="$VIRTUAL_ENV/Scripts:$PATH"
 export PATH
 
 # unset PYTHONHOME if set
