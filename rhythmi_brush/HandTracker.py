@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 # standard lib imports
 import sys
 import os
@@ -41,7 +43,7 @@ class handDetection():
     # If draw == True, then it also draws a circle on the specific landmark node you want
     def findPosition(self, frame, landmarkID=8, draw=True):
         self.lmList = []
-        
+
         if self.results.multi_hand_landmarks:
             for handLMS in self.results.multi_hand_landmarks:
                 # print(self.results.multi_hand_landmarks)
@@ -50,6 +52,7 @@ class handDetection():
                     h, w, c = frame.shape
                     cx, cy = int(lm.x * w), int(lm.y * h)
                     self.lmList.append([id, cx, cy])
+                    
                     if draw and id == landmarkID:
                         cv.circle(frame, (cx, cy), 10, (255, 0, 255), cv.FILLED)
             
@@ -63,20 +66,20 @@ class handDetection():
         return self.lmList
     # HandTracker class method that returns a boolean arr size 5 of which fingers are up
     def fingersUp(self):
-        fingers = []
+        fingers = [0,0,0,0,0]
 
         # Thumb
         if self.lmList[self.tipIDs[0]][1] < self.lmList[self.tipIDs[0] - 1][1]:
-            fingers.append(1)
+            fingers[0] = 1
         else:
-            fingers.append(0)
+            fingers[0] = 0
 
         # 4Fingers
         for id in range(1, 5):
             if self.lmList[self.tipIDs[id]][2] < self.lmList[self.tipIDs[id] - 2][2]:
-                fingers.append(1)
+                fingers[id] = 1
             else:
-                fingers.append(0)
+                fingers[id] = 0
         return fingers
     
 # Just a tester function
@@ -92,7 +95,7 @@ def main():
         frame = cv.flip(frame, 1)
         frame = detector.findHands(frame)
 
-        lmList = detector.findPosition(frame)
+        lmList = detector.findPosition(frame, draw=False)
 
         if lmList:
             print(lmList)
