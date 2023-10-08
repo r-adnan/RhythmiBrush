@@ -27,7 +27,7 @@ app = Flask(__name__)
 
 @app.route('/callback')
 def callback():
-    return "Spotify Authorized"
+    return "Spotify Authorized. You can close out of this page."
 
 if __name__ == "__main__":
     app.run(port=7777)
@@ -71,7 +71,7 @@ def get_current_track(access_token):
     current_track_info = {
         "id": track_id,
         "track_name": track_name,
-        "artists": artist_names
+        "artists": artist_names,
         "link": link
     }
 
