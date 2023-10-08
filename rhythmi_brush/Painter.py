@@ -9,7 +9,7 @@ import time
 import os
 
 import HandTracker as ht
-
+import spotipyModule as spm
 
 
 cap = cv.VideoCapture(0)
@@ -21,15 +21,28 @@ fingers = [0,0,0,0,0]
 success, frame = cap.read()
 imageCanvas = np.zeros_like(frame)
 px, py = 0, 0
+
+sptmModule = spm.spotipyModule("362dc80475a04994834c34e8e9407efa",
+                                "e30e2844a83742fd9fd217ae9a8418f7",
+                                "http://localhost:8888/callback",
+                                "user-read-playback-state,user-modify-playback-state")
 while True:
     success, frame = cap.read()
     
     frame = cv.flip(frame, 1)
     
     # 2 Find Hand Landmarks
-    frame = detector.findHands(frame, draw=True)
+    frame = detector.findHands(frame, draw=False)
     lmList = detector.findPosition(frame, draw=False)
     
+    
+    currSongFeatures = sptmModule.getStats()
+    normalized_loudness = (currSongFeatures['loudness'] + 60) / 60
+    brush_size = int(currSongFeatures['energy'] * 20 + normalized_loudness * 10)
+    brush_color = (int(currSongFeatures['danceability'] * 255), 
+                   int(currSongFeatures['tempo'] % 255), 
+                   int(currSongFeatures['acousticness'] * 255))
+
     if lmList:
         # print(lmList)
         xPointer, yPointer = lmList[8][1:]
@@ -47,10 +60,9 @@ while True:
             px, py = xPointer, yPointer
         
         
-        cv.line(imageCanvas, (px, py), (xPointer, yPointer), (0, 255, 0), 3)
+        cv.line(imageCanvas, (px, py), (xPointer, yPointer), brush_color, brush_size)
         px, py = xPointer, yPointer
         
-
     # 5 if Erase mode - 2 fingers up
     elif fingers[1] and fingers[2] and not (fingers[3] or 
                                          fingers[4] or fingers[0]):

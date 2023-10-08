@@ -14,8 +14,8 @@ scope='user-read-playback-state,user-modify-playback-state'
 class spotipyModule:
     def __init__(self, clientID, clientSecret, redirectURI, scope):
         self.clientID = clientID
-        self.clientSecret= clientSecret,
-        self.redirectURI= redirectURI,
+        self.clientSecret= clientSecret
+        self.redirectURI= redirectURI
         self.scope= scope
         self.sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id= self.clientID,
                                                client_secret= self.clientSecret,
@@ -27,10 +27,13 @@ class spotipyModule:
     
     def setTrack(self, track_uri='spotify:track:0HUTL8i4y4MiGCPId7M7wb'):
         self.sp.start_playback(uris=[track_uri])
-    
-    def getStats(self, song):
-        track_info = self.sp.track(song)
-        track_features = self.sp.audio_features(song)
+        
+    def getStats(self, songURI=None):
+        if songURI is None:
+            songURI = self.getCurrTrack()['item']['uri']
+        
+        track_info = self.sp.track(songURI)
+        track_features = self.sp.audio_features(songURI)
 
         acousticness = track_features[0]['acousticness']
         danceability = track_features[0]['danceability']
@@ -41,11 +44,11 @@ class spotipyModule:
 
         track = [acousticness, danceability, energy, liveness, loudness, tempo]
 
-        dy = pd.DataFrame (track).T.values.tolist()
-        dy_final = pd.DataFrame(dy, columns = ['acousticness', 'danceability', 'energy', 'liveness', 'loudness', 'tempo'])
+        dy = pd.DataFrame(track).T.values.tolist()
+        dy_final = pd.DataFrame(dy, columns=['acousticness', 'danceability', 'energy', 'liveness', 'loudness', 'tempo'])
 
-        print(dy_final)
-        
+        return dy_final
+
 
 def main():
     sp = spotipyModule(clientID, clientSecret, redirectURI, scope)
