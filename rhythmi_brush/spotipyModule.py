@@ -21,13 +21,29 @@ class spotipyModule:
                                                client_secret= self.clientSecret,
                                                redirect_uri= self.redirectURI,
                                                scope= self.scope))
+        
+        self.current_song_uri = None
+        self.current_song_features = None
+
 
     def getCurrTrack(self):
         return self.sp.current_playback()
     
     def setTrack(self, track_uri='spotify:track:0HUTL8i4y4MiGCPId7M7wb'):
         self.sp.start_playback(uris=[track_uri])
-        
+    
+    def updateCurrentSong(self):
+        currPlayback = self.getCurrTrack()
+        if currPlayback['item']['uri'] != self.current_song_uri:
+            self.current_song_uri = currPlayback['item']['uri']
+            self.current_song_features = self.getStats(self.current_song_uri)
+
+    def getCurrentSongFeatures(self):
+        if self.current_song_features is None:
+            self.updateCurrentSong()
+        return self.current_song_features
+
+
     def getStats(self, songURI=None):
         if songURI is None:
             songURI = self.getCurrTrack()['item']['uri']

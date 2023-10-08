@@ -26,9 +26,19 @@ sptmModule = spm.spotipyModule("362dc80475a04994834c34e8e9407efa",
                                 "e30e2844a83742fd9fd217ae9a8418f7",
                                 "http://localhost:8888/callback",
                                 "user-read-playback-state,user-modify-playback-state")
+
+last_update_time = time.time()
+
+update_interval = 5
+
 while True:
     success, frame = cap.read()
     
+    current_time = time.time()
+
+    if current_time - last_update_time > update_interval:
+        sptmModule.updateCurrentSong()
+        last_update_time = current_time
     frame = cv.flip(frame, 1)
     
     # 2 Find Hand Landmarks
@@ -36,7 +46,7 @@ while True:
     lmList = detector.findPosition(frame, draw=False)
     
     
-    currSongFeatures = sptmModule.getStats()
+    currSongFeatures = sptmModule.getCurrentSongFeatures()
     normalized_loudness = (currSongFeatures['loudness'] + 60) / 60
     brush_size = int(currSongFeatures['energy'] * 20 + normalized_loudness * 10)
     brush_color = (int(currSongFeatures['danceability'] * 255), 
