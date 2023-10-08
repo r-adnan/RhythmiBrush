@@ -1,13 +1,15 @@
-import requests
-from urllib.parse import urlencode
 import base64
+import datetime
+from urllib.parse import urlencode
+
+import requests
+import json
+
+from urllib.parse import urlencode
 import webbrowser
 from flask import Flask, request, redirect
 import os
 from requests import post
-import json
-import time 
-from pprint import pprint 
 
 client_id = "362dc80475a04994834c34e8e9407efa"
 client_secret = "e30e2844a83742fd9fd217ae9a8418f7"
@@ -18,7 +20,7 @@ auth_headers = {
     "client_id": client_id,
     "response_type": "code",
     "redirect_uri": "http://localhost:7777/callback",
-    "scope": "user-library-read"
+    "scope": "user-read-playback-state"
 }
 
 webbrowser.open("https://accounts.spotify.com/authorize?" + urlencode(auth_headers))
@@ -51,45 +53,87 @@ def get_token():
 
     return token
 
-token = get_token()
-# print(token)
+token = get_token() 
 
-def get_current_track(access_token):
-    response = requests.get(gct_url, headers = {
-        "Authorization":f"Bearer {access_token}"
-    })
-    json_resp = response.json()
 
-    track_id = json_resp['item']['id']
-    track_name = json_resp['item']['name']
-    artists = [artist for artist in json_resp['item']['artists']]
+class SpotifyAPI(object):
+    client_id = None
+    client_secret = None
+    access_token = token 
 
-    link = json_resp['item']['external_urls']['spotify']
+    def __init__(self, client_id, client_secret, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.client_id = client_id
+        self.client_secret = client_secret
+
+    def base_search(self, query_params): # type
+        headers = self.get_resource_header()
+        endpoint = "https://api.spotify.com/v1/search"
+        lookup_url = f"{endpoint}?{query_params}"
+        r = requests.get(lookup_url, headers=headers)
+        if r.status_code not in range(200, 299):  
+            return {}
+
+        json_object = json.dumps(r.json(), indent=4)
+        with open('search_results.txt', 'w') as f:
+            f.write(json_object)
+        return r.json()
     
-    artist_names = ', '.join([artist['name'] for artist in artists])
+    def search(self, query=None, operator=None, operator_query=None, search_type='artist' ):
+        if query == None:
+            raise Exception("A query is required")
+        if isinstance(query, dict):
+            query = " ".join([f"{k}:{v}" for k,v in query.items()])
+        if operator != None and operator_query != None:
+            if operator.lower() == "or" or operator.lower() == "not":
+                operator = operator.upper()
+                if isinstance(operator_query, str):
+                    query = f"{query} {operator} {operator_query}"
+        query_params = urlencode({"q": query, "type": search_type.lower()})
+        print(query_params)
+        return self.base_search(query_params)
 
-    current_track_info = {
-        "id": track_id,
-        "track_name": track_name,
-        "artists": artist_names,
-        "link": link
-    }
+    def get_current_track(self):
+        response = requests.get(gct_url, headers = {
+            "Authorization":f"Bearer {self.access_token}"
+        })
+        json_resp = response.json()
 
-    return current_track_info
+        # track_id = json_resp['item']['id']
+        # track_name = json_resp['item']['name']
+        # artists = [artist for artist in json_resp['item']['artists']]
 
-def main():
-    current_track_id = None
-    
-    while True:
-        current_track_info = get_current_track(token)
-
-        if current_track_info['id'] != current_track_id:
-            pprint(
-                current_track_info,
-                indent=4
-            )
-            current_track_id = current_track_info['id']
+        # link = json_resp['item']['external_urls']['spotify']
         
-        time.sleep(1)
+        json_object = json.dumps(json_resp, indent=4)
+        with open('search_results.txt', 'w') as f:
+            f.write(json_object)
 
-main()
+        # artist_names = ', '.join([artist['name'] for artist in artists])
+
+        # current_track_info = {
+        #     "id": track_id,
+        #     "track_name": track_name,
+        #     "artists": artist_names,
+        #     "link": link
+        # }
+
+        return 
+
+    def main():
+        current_track_id = None
+        
+        while True:
+            current_track_info = get_current_track(token)
+
+            if current_track_info['id'] != current_track_id:
+                pprint(
+                    current_track_info,
+                    indent=4
+                )
+                current_track_id = current_track_info['id']
+            
+            time.sleep(1)
+
+spotify = SpotifyAPI("362dc80475a04994834c34e8e9407efa", "e30e2844a83742fd9fd217ae9a8418f7")
+spotify.get_current_track()

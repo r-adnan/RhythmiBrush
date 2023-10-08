@@ -1,6 +1,8 @@
 import spotipy as spotipy
 from spotipy.oauth2 import SpotifyOAuth
 from pprint import pprint
+import pandas as pd
+import time
 
 from time import sleep
 
@@ -25,6 +27,24 @@ class spotipyModule:
     
     def setTrack(self, track_uri='spotify:track:0HUTL8i4y4MiGCPId7M7wb'):
         self.sp.start_playback(uris=[track_uri])
+    
+    def getStats(self, song):
+        track_info = self.sp.track(song)
+        track_features = self.sp.audio_features(song)
+
+        acousticness = track_features[0]['acousticness']
+        danceability = track_features[0]['danceability']
+        energy = track_features[0]['energy']
+        liveness = track_features[0]['liveness']
+        loudness = track_features[0]['loudness']
+        tempo = track_features[0]['tempo']
+
+        track = [acousticness, danceability, energy, liveness, loudness, tempo]
+
+        dy = pd.DataFrame (track).T.values.tolist()
+        dy_final = pd.DataFrame(dy, columns = ['acousticness', 'danceability', 'energy', 'liveness', 'loudness', 'tempo'])
+
+        print(dy_final)
         
 
 def main():
@@ -38,6 +58,7 @@ def main():
     #     sleep(1)
         
     print(f"Now playing {currPlayback['item']['name']} from {currPlayback['item']['album']['name']} by {currPlayback['item']['album']['artists'][0]['name']}")
+    sp.getStats(currPlayback['item']['uri'])
     # pprint(currPlayback.devices())
 
 # Change track
