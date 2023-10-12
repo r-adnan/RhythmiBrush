@@ -223,4 +223,7 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
+# API keys
+api_keys.py
+
 # End of https://www.toptal.com/developers/gitignore/api/python,opencv,windows,linux

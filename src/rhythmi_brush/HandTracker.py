@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 # standard lib imports
 import sys
 import os

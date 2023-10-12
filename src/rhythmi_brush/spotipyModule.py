@@ -4,10 +4,11 @@ from pprint import pprint
 import pandas as pd
 import time
 
+from ..api_keys import clientID
+from ..api_keys import clientSecret
+
 from time import sleep
 
-clientID = "362dc80475a04994834c34e8e9407efa"
-clientSecret = "e30e2844a83742fd9fd217ae9a8418f7"
 redirectURI = "http://localhost:8888/callback"
 scope='user-read-playback-state,user-modify-playback-state'
 

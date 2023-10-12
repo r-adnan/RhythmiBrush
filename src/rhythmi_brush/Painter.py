@@ -8,10 +8,14 @@ import time
 import os
 import soundcard as sc
 
-import HandTracker as ht
-import spotipyModule as spm
+from . import HandTracker as ht
+from . import spotipyModule as spm
 
-import BrushModule as bt
+from . import BrushModule as bt
+
+from ..api_keys import clientID
+from ..api_keys import clientSecret
+
 cap = cv.VideoCapture(0)
 
 cap.set(3, 1280)
@@ -22,8 +26,8 @@ success, frame = cap.read()
 imageCanvas = np.zeros_like(frame)
 px, py = 0, 0
 
-sptmModule = spm.spotipyModule("362dc80475a04994834c34e8e9407efa",
-                                "e30e2844a83742fd9fd217ae9a8418f7",
+sptmModule = spm.spotipyModule(clientID,
+                                clientSecret,
                                 "http://localhost:8888/callback",
                                 "user-read-playback-state,user-modify-playback-state")
 
