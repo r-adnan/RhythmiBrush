@@ -4,8 +4,8 @@ from pprint import pprint
 import pandas as pd
 import time
 
-from ..api_keys import clientID
-from ..api_keys import clientSecret
+from . api_keys import clientID
+from . api_keys import clientSecret
 
 from time import sleep
 

@@ -13,8 +13,8 @@ from . import spotipyModule as spm
 
 from . import BrushModule as bt
 
-from ..api_keys import clientID
-from ..api_keys import clientSecret
+from . api_keys import clientID
+from . api_keys import clientSecret
 
 cap = cv.VideoCapture(0)
 
