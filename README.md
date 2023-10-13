@@ -3,8 +3,14 @@
 Put up just your pointer finger to draw on the screen. Put up your pointer and your middle to erase. Turn up your sound for a thicker brush size. 
 Press 'q' to stop the program.
 
-As of now, only runs on Windows. 
+To run, navigate to the RhythmiBrush directory.
 
-To run, navigate to the RhythmiBrush directory and type:
+**FOR WINDOWS**
 
+Run the following in the command prompt:
 `.\RhythmiBrush.bat`
+
+**FOR LINUX OR MACOS**
+Run the following in the command prompt:
+`chmod +x run_project.sh`
+`./RhythmiBrush.sh`
