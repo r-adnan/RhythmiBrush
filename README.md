@@ -56,4 +56,4 @@ If you encounter any issues while setting up or running the application, please 
 
 2. **Brush size not varying**
     - **Symptom:** Caused by issues with recording sound from audio device, maybe the wrong device is selected for listening.
-    - **Symptom:** You could navigate to the Painter Code itself and find the current recording loopback microphone you are using, although this may be difficult. Working on a more proper fix.
+    - **Solution:** You could navigate to the Painter Code itself and find the current recording loopback microphone you are using, although this may be difficult. Working on a more proper fix.
