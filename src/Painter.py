@@ -41,7 +41,7 @@ brush_color = None
 
 
 # Define chunk size
-loopback = [mic for mic in sc.all_microphones(include_loopback=True) if 'stereo mix' in mic.name.lower()][1]
+loopback = [mic for mic in sc.all_microphones(include_loopback=True) if 'stereo mix' in mic.name.lower()][0]
 CHUNK_SIZE = 1024
 
 with loopback.recorder(samplerate=44100) as mic:
