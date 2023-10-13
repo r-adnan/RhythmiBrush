@@ -15,6 +15,7 @@ from . import BrushModule as bt
 
 from . api_keys import clientID
 from . api_keys import clientSecret
+from . api_keys import redirectURI
 
 cap = cv.VideoCapture(0)
 
@@ -28,7 +29,7 @@ px, py = 0, 0
 
 sptmModule = spm.spotipyModule(clientID,
                                 clientSecret,
-                                "http://localhost:8888/callback",
+                                redirectURI,
                                 "user-read-playback-state,user-modify-playback-state")
 
 last_update_time = time.time()

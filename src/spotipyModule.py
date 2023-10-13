@@ -6,10 +6,10 @@ import time
 
 from . api_keys import clientID
 from . api_keys import clientSecret
+from . api_keys import redirectURI
 
 from time import sleep
 
-redirectURI = "http://localhost:8888/callback"
 scope='user-read-playback-state,user-modify-playback-state'
 
 class spotipyModule:
