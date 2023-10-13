@@ -15,6 +15,7 @@ from . import BrushModule as bt
 
 from . api_keys import clientID
 from . api_keys import clientSecret
+from . api_keys import clientURI
 
 cap = cv.VideoCapture(0)
 
@@ -28,7 +29,7 @@ px, py = 0, 0
 
 sptmModule = spm.spotipyModule( clientID,
                                 clientSecret,
-                                "http://localhost:8888/callback",
+                                clientURI,
                                 "user-read-playback-state,user-modify-playback-state"
                                 )
 
@@ -40,7 +41,7 @@ brush_color = None
 
 
 # Define chunk size
-loopback = [mic for mic in sc.all_microphones(include_loopback=True) if 'stereo mix' in mic.name.lower()][0]
+loopback = [mic for mic in sc.all_microphones(include_loopback=True) if 'stereo mix' in mic.name.lower()][1]
 CHUNK_SIZE = 1024
 
 with loopback.recorder(samplerate=44100) as mic:
