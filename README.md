@@ -11,6 +11,7 @@ Run the following in the command prompt:
 `.\RhythmiBrush.bat`
 
 **FOR LINUX OR MACOS**
+
 Run the following in the command prompt:
 `chmod +x run_project.sh`
 `./RhythmiBrush.sh`
