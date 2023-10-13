@@ -24,7 +24,11 @@ class spotipyModule:
                                                scope= self.scope))
         
         self.current_song_uri = None
-        self.current_song_features = None
+        self.songDetails = None
+
+        dy = pd.DataFrame([]).T.values.tolist()
+        dy_final = pd.DataFrame(dy, columns=['acousticness', 'danceability', 'energy', 'liveness', 'loudness', 'tempo'])
+        self.current_song_features = dy_final
 
 
     def getCurrTrack(self):
@@ -38,14 +42,20 @@ class spotipyModule:
     
     def updateCurrentSong(self):
         currPlayback = self.getCurrTrack()
+        if not currPlayback:
+            return
         if currPlayback['item']['uri'] != self.current_song_uri:
             self.current_song_uri = currPlayback['item']['uri']
             self.current_song_features = self.getStats(self.current_song_uri)
+            self.songDetails = currPlayback
 
     def getCurrentSongFeatures(self):
-        if self.current_song_features is None:
+        if self.current_song_features.empty:
             self.updateCurrentSong()
         return self.current_song_features
+    
+    def getSongDetails(self):
+        return self.songDetails
 
 
     def getStats(self, songURI=None):
@@ -68,6 +78,7 @@ class spotipyModule:
         dy_final = pd.DataFrame(dy, columns=['acousticness', 'danceability', 'energy', 'liveness', 'loudness', 'tempo'])
 
         return dy_final
+        
 
 
 def main():

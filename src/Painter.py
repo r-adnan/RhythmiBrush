@@ -61,9 +61,16 @@ with loopback.recorder(samplerate=44100) as mic:
         lmList = detector.findPosition(frame)
         
         currSongFeatures = sptmModule.getCurrentSongFeatures()
+        if currSongFeatures.empty:
+            cv.putText(frame, "No song is currently playing.", (30, 50), cv.FONT_HERSHEY_TRIPLEX, 1, (0, 0, 0), 1)
+            cv.imshow("paintDriver", frame)
+            if cv.waitKey(1) == ord('q'):
+                break
+            continue
+        
+        songDetails = sptmModule.getSongDetails()
+        cv.putText(frame, f"Now playing {songDetails['item']['name']} from {songDetails['item']['album']['name']} by {songDetails['item']['album']['artists'][0]['name']}", (30, 50), cv.FONT_HERSHEY_TRIPLEX, 0.5, (0, 0, 0), 1)
 
-
-        # prev_brush_color = brush_color
         brush_color = (int(currSongFeatures['danceability'] * 255 * .5 - int(rms * 1000)*3), 
                     int(currSongFeatures['tempo'] % 255 ) - int(rms * 1000)*2 , 
                     min(int(currSongFeatures['acousticness'] * 255 *4) + int(rms * 1000)*5, 255)
