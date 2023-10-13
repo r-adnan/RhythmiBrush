@@ -3,6 +3,6 @@ if [ ! -d "myenv" ]; then
     myenv/bin/pip install -r requirements.txt
 fi
 
-echo "Downloaded necessary dependencies..."
+echo "Downloaded necessary dependencies."
 echo "Loading..."
 myenv/bin/python -m src.Painter
