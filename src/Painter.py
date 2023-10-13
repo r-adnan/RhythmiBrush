@@ -26,10 +26,11 @@ success, frame = cap.read()
 imageCanvas = np.zeros_like(frame)
 px, py = 0, 0
 
-sptmModule = spm.spotipyModule(clientID,
+sptmModule = spm.spotipyModule( clientID,
                                 clientSecret,
                                 "http://localhost:8888/callback",
-                                "user-read-playback-state,user-modify-playback-state")
+                                "user-read-playback-state,user-modify-playback-state"
+                                )
 
 last_update_time = time.time()
 
@@ -39,7 +40,7 @@ brush_color = None
 
 
 # Define chunk size
-loopback = [mic for mic in sc.all_microphones(include_loopback=True) if 'Stereo Mix' in mic.name][0]
+loopback = [mic for mic in sc.all_microphones(include_loopback=True) if 'stereo mix' in mic.name.lower()][0]
 CHUNK_SIZE = 1024
 
 with loopback.recorder(samplerate=44100) as mic:
@@ -62,14 +63,18 @@ with loopback.recorder(samplerate=44100) as mic:
         
         currSongFeatures = sptmModule.getCurrentSongFeatures()
         if currSongFeatures.empty:
-            cv.putText(frame, "No song is currently playing.", (30, 50), cv.FONT_HERSHEY_TRIPLEX, 1, (0, 0, 0), 1)
+            cv.putText(frame, "No song is currently playing.", (30, 50), cv.FONT_HERSHEY_TRIPLEX, 1, (0, 0, 0), 3)
+            cv.putText(frame, "No song is currently playing.", (30, 50), cv.FONT_HERSHEY_TRIPLEX, 1, (255, 255, 255), 1)
             cv.imshow("paintDriver", frame)
             if cv.waitKey(1) == ord('q'):
                 break
             continue
         
         songDetails = sptmModule.getSongDetails()
-        cv.putText(frame, f"Now playing {songDetails['item']['name']} from {songDetails['item']['album']['name']} by {songDetails['item']['album']['artists'][0]['name']}", (30, 50), cv.FONT_HERSHEY_TRIPLEX, 0.5, (0, 0, 0), 1)
+        text = f"Now playing {songDetails['item']['name']} from {songDetails['item']['album']['name']} by {songDetails['item']['album']['artists'][0]['name']}"
+        cv.putText(frame, text, (30, 50), cv.FONT_HERSHEY_TRIPLEX, 0.5, (0, 0, 0), 3)
+        cv.putText(frame, text, (30, 50), cv.FONT_HERSHEY_TRIPLEX, 0.5, (255, 255, 255), 1)
+        
 
         brush_color = (int(currSongFeatures['danceability'] * 255 * .5 - int(rms * 1000)*3), 
                     int(currSongFeatures['tempo'] % 255 ) - int(rms * 1000)*2 , 
@@ -102,8 +107,8 @@ with loopback.recorder(samplerate=44100) as mic:
                                             fingers[4] or fingers[0]):
             px, py = 0, 0
             # print(np.around(np.sqrt((xPointer - xMiddle)**2 + (yPointer - yMiddle)**2)))
-            val = int(np.round(np.sqrt((xMiddle- xPointer)**2 + (yMiddle - yPointer)**2)))
-            rad = max(val-20, 0)
+            val = int(np.round(np.sqrt((xMiddle- xPointer)**2 + (yMiddle - yPointer)**2))/1.5)
+            rad = max(val, 0)
             cv.circle(frame, ((xPointer + xMiddle)//2, (yPointer + yMiddle)//2),
                     rad, (0, 255, 0), 2)
             cv.circle(imageCanvas, ((xPointer + xMiddle)//2, (yPointer + yMiddle)//2),
@@ -117,6 +122,10 @@ with loopback.recorder(samplerate=44100) as mic:
 
         # This huge block is just fancy bitwise and inverse color operations
         # To make the image and drawing Canvas overlayed
+
+        # Inversely, we could also do this:
+        # frame = cv.addWeighted(frame, 1, imageCanvas, 1, 1)
+        # However, it will make the actual drawing a bit opaque
         imageGray = cv.cvtColor(imageCanvas, cv.COLOR_BGR2GRAY)
         _, imageInv = cv.threshold(imageGray, 50, 255, cv.THRESH_BINARY_INV)
         ImageInv = cv.cvtColor(imageInv, cv.COLOR_GRAY2BGR)
