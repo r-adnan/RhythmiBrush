@@ -48,14 +48,7 @@ And enter your audio input device when prompted.
 If you encounter any issues while setting up or running the application, please refer to the common problems and their solutions listed below.
 
 ### Known Issues
-1. ```bash
-   loopback = [mic for mic in sc.all_microphones(include_loopback=True) if 'stereo mix' in mic.name.lower()][0]
-              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^
-   IndexError: list index out of range
-   ```
-   - **Symptom:** Caused by inability to find an existing loopback microphone, this can happen due to a variety of reasons.
-   - **Solution:** Currently for Linux/MacOS we are working on a solution, but for Windows you can navigate to Sounds and click 'Recording' and enable 'Stereo Mix' or 'HeadSet Microphone' depending on whichever you are currently using.
 
-2. **Brush size not varying**
+1. **Brush size not varying**
     - **Symptom:** Caused by issues with recording sound from audio device, maybe the wrong device is selected for listening.
     - **Solution:** You could navigate to the Painter.py code itself and hardcode the current recording loopback microphone you are using, although this may be difficult. Working on a more proper fix.
