@@ -17,6 +17,8 @@ from . api_keys import clientID
 from . api_keys import clientSecret
 from . api_keys import redirectURI
 
+from . mic import input_mic
+
 cap = cv.VideoCapture(0)
 
 cap.set(3, 1280)
@@ -40,7 +42,7 @@ brush_color = None
 
 
 # Define chunk size
-loopback = [mic for mic in sc.all_microphones(include_loopback=True) if 'stereo mix' in mic.name.lower()][0]
+loopback = [mic for mic in sc.all_microphones(include_loopback=True) if input_mic in mic.name.lower()][0]
 CHUNK_SIZE = 1024
 
 with loopback.recorder(samplerate=44100) as mic:

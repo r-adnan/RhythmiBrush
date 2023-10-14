@@ -34,6 +34,7 @@ Run the following in the command prompt:
 ```bash
 .\RhythmiBrush.bat
 ```
+And enter your audio input device when prompted.
 
 ### For Linux or MacOS:
 Run the following in the command prompt:
@@ -41,6 +42,7 @@ Run the following in the command prompt:
 chmod +x run_project.sh
 ./RhythmiBrush.sh
 ```
+And enter your audio input device when prompted.
 
 ## TroubleShooting
 If you encounter any issues while setting up or running the application, please refer to the common problems and their solutions listed below.
