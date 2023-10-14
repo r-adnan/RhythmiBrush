@@ -9,7 +9,7 @@ if NOT EXIST myenv (
     call .\myenv\Scripts\pip install -r requirements.txt > NUL 2>&1
 
     set /p set_mic=Type in the name of your microphone: 
-    echo intput_mic = "!set_mic!" > src/mic.py
+    echo input_mic = "!set_mic!" > src/mic.py
 )
 
 echo Downloaded necessary dependencies.
