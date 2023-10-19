@@ -229,4 +229,7 @@ api_keys.py
 
 apiBackend.py
 
+# Microphone input
+mic.py 
+
 # End of https://www.toptal.com/developers/gitignore/api/python,opencv,windows,linux

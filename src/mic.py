@@ -1,1 +1,1 @@
-input_mic = "capture input terminal" 
+input_mic = "stereo mix" 
